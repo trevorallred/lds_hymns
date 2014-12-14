@@ -1,0 +1,45 @@
+@baseFontSize: 20px;
+@errorColor: #ff6666;
+
+body {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+#content {
+  font-size: @baseFontSize;
+}
+
+form {
+  dd.info {
+    display: none;
+  }
+
+  input {
+    border: 1px solid #cccccc;
+    border-radius: 4px 4px 4px 4px;
+    padding-left: 2px;
+  }
+
+  dl.error {
+    dd.error {
+      @font-size: @baseFontSize - 2px;
+      color: @errorColor;
+    }
+
+    input {
+      border-color: @errorColor;
+    }
+  }
+}
+
+.show-person {
+  margin-top: 10px;
+}
+
+.search-results {
+  margin-top: 10px;
+}
+
+#footer {
+  font-size: @baseFontSize - 4px;
+}
