@@ -11,7 +11,7 @@ object Application extends Controller {
 
   def index = Action.async {
     Future {
-      Ok(views.html.index())
+      Ok(views.html.mobile())
     }
   }
 
