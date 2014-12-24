@@ -1,0 +1,80 @@
+<div ui-content-for="topNavBar">
+    <div class="btn-group pull-left">
+        <a class="btn btn-navbar" href="#/schedule/{{ week.previousWeek() | date: 'yyyy-MM-dd' }}">
+            <i class="fa fa-calendar"></i>
+            Back to Meeting
+        </a>
+    </div>
+
+    <div class="navbar-brand navbar-brand-center">
+        <span>
+            Choose {{ songType }} for {{ week.date }}
+        </span>
+    </div>
+</div>
+
+<div ui-content-for="bottomNavBar">
+    <div class="btn-group pull-right">
+        <a class="btn btn-navbar" href="#/schedule/{{ week.nextWeek() | date: 'yyyy-MM-dd' }}">
+            <i class="fa fa-floppy-o"></i>
+            Save
+        </a>
+    </div>
+</div>
+
+<div class="scrollable">
+    <div class="scrollable-content">
+        asdf
+        <label data-ng-model="activeTab">in</label>
+        asdf
+        <div class='section'>
+            <ui-state id='activeTab' default='1'></ui-state>
+
+            <ul class="nav nav-tabs">
+                <li ui-class="{'active': activeTab == 1}">
+                    <a ui-set="{'activeTab': 1}">List</a>
+                </li>
+                <li ui-class="{'active': activeTab == 'search'}">
+                    <a ui-set="{'activeTab': 'search'}">Search</a>
+                </li>
+                <li ui-class="{'active': activeTab == 'suggest'}">
+                    <a ui-set="{'activeTab': 'suggest'}">Suggest</a>
+                </li>
+                <li ui-class="{'active': activeTab == 'other'}">
+                    <a ui-set="{'activeTab': 'other'}">Other</a>
+                </li>
+            </ul>
+
+            <div ui-if="activeTab == 1">
+                <div class="list-group">
+                    <a href="#/schedule/{{ week.previousWeek()" class="list-group-item" data-ng-repeat="hymn in hymns">
+                        <button class="btn btn-default" data-ng-click="choose(hymn)">Choose</button>
+                        {{ hymn.page }} {{ hymn.title }}
+                        <i class="fa fa-chevron-right pull-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div ui-if="activeTab == 'search'">
+                <h3 class="page-header"></h3>
+
+                <p>{{lorem}}</p>
+            </div>
+
+            <div ui-if="activeTab == 'suggest'">
+                <h3 class="page-header"></h3>
+
+                <p>{{lorem}}</p>
+            </div>
+
+            <div ui-if="activeTab == 'other'">
+                <form>
+                    <label>Song Title</label>
+                    <input type="text" data-ng-model="other">
+                    <button class="btn btn-default" data-ng-click="choose(hymn)">Save</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>

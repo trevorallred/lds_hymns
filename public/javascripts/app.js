@@ -1,17 +1,29 @@
-var app = angular.module('myApp', ["mobile-angular-ui", "ngRoute"]);
+var app = angular.module('myApp', ["mobile-angular-ui", "ngRoute", "util"]);
 
 var partial_dir = "assets/partials/";
 
 app.config(['$routeProvider',
     function ($routeProvider) {
         $routeProvider.
+            when('/schedule', {
+                templateUrl: partial_dir + 'schedule.html',
+                controller: 'ScheduleCtrl'
+            }).
             when('/schedule/:weekDate', {
                 templateUrl: partial_dir + 'schedule.html',
                 controller: 'ScheduleCtrl'
             }).
-            when('/schedule', {
-                templateUrl: partial_dir + 'schedule.html',
-                controller: 'ScheduleCtrl'
+            when('/schedule/:weekDate/song/:songType', {
+                templateUrl: partial_dir + 'choose_song.html',
+                controller: 'SelectHymnCtrl'
+            }).
+            when('/schedule/:weekDate/speaker/:memberType', {
+                templateUrl: partial_dir + 'choose_member.html',
+                controller: 'SelectMemberCtrl'
+            }).
+            when('/schedule/:weekDate/prayer/:memberType', {
+                templateUrl: partial_dir + 'choose_member.html',
+                controller: 'SelectMemberCtrl'
             }).
             when('/about', {
                 templateUrl: partial_dir + 'about.html'
@@ -24,46 +36,47 @@ app.config(['$routeProvider',
             });
     }]);
 
-app.controller('ScheduleCtrl', ['$scope', '$http', '$routeParams',
-    function ($scope, $http, $routeParams) {
-        var weekDate = $routeParams.weekDate;
-        if (Date.parse(weekDate)) {
-            weekDate = new Date(weekDate);
-        } else {
-            weekDate = new Date();
-        }
+app.controller('ScheduleCtrl', ['$scope', '$http', '$routeParams', '$filter', 'commonDates',
+    function ($scope, $http, $routeParams, $filter, commonDates) {
+        var weekDate = commonDates.nextSunday($routeParams.weekDate);
 
-        if (weekDate.getDay() > 0) {
-            weekDate = dateUtil.addDays(weekDate, 7 - weekDate.getDay());
-        }
-
-        var addDays = function (currentDate, daysToAdd) {
-            var newDate = currentDate;
-
-        }
-
-        var week = {
+        $scope.week = {
             date: weekDate,
+            label: $filter('date')(weekDate, 'yyyy-MM-dd'),
             fast_sunday: true,
             nextWeek: function () {
-//                week.fast_sunday = !week.fast_sunday;
-                return dateUtil.addDays(weekDate, 7);
+                return commonDates.addDays(weekDate, 7);
             },
             previousWeek: function () {
-                return dateUtil.addDays(weekDate, -7);
+                return commonDates.addDays(weekDate, -7);
             }
         }
-        $scope.week = week;
 
         $scope.members = [
             {name: "Trevor Allred"}
         ];
     }]);
 
-var dateUtil = {
-    addDays: function (oldDate, daysToAdd) {
-        var newDate = new Date(oldDate);
-        newDate.setDate(newDate.getDate() + daysToAdd);
-        return newDate;
-    }
-}
+app.controller('SelectHymnCtrl', ['$scope', '$http', '$routeParams',
+    function ($scope, $http, $routeParams) {
+        $scope.songType = $routeParams.songType;
+        var view = $routeParams.view;
+        $scope.activeTab = "list";
+
+        $scope.hymns = [
+            {page: 1, title: "The Morning Breaks"},
+            {page: 2, title: "The Spirit of God"},
+            {page: 3, title: "The Morning Breaks"},
+            {page: 4, title: "The Morning Breaks"}
+        ];
+    }]);
+
+app.controller('SelectMemberCtrl', ['$scope', '$http', '$routeParams',
+    function ($scope, $http, $routeParams) {
+        $scope.songType = $routeParams.memberType;
+        var view = $routeParams.view;
+
+        $scope.members = [
+            {name: "Trevor Allred"}
+        ];
+    }]);
