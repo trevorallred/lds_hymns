@@ -1,0 +1,115 @@
+<div ui-content-for="topNavBar">
+    <div class="btn-group pull-left">
+        <a href ui-toggle='uiSidebarLeft'>Open</a>
+    </div>
+
+    <div class="navbar-brand navbar-brand-center">
+        <span>
+            <i class="fa fa-calendar"></i>
+            {{ week.date | date: "mediumDate"}}
+        </span>
+    </div>
+</div>
+
+<div ui-content-for="bottomNavBar">
+    <div class="btn-group pull-left">
+        <a class="btn btn-navbar" href="#/schedule/{{ week.previousWeek() | date: 'yyyy-MM-dd' }}">
+            <i class="fa fa-angle-double-left"></i>
+            Previous
+        </a>
+    </div>
+
+    <div class="btn-group pull-right">
+        <a class="btn btn-navbar" href="#/schedule/{{ week.nextWeek() | date: 'yyyy-MM-dd' }}">
+            Next
+            <i class="fa fa-angle-double-right"></i>
+        </a>
+    </div>
+</div>
+
+<div class="scrollable">
+    <div class="scrollable-content">
+        <div class="list-group">
+            <div class="list-group-item">
+                <!--<div class="alert alert-success" role="alert" data-ng-show="week.fast_sunday">-->
+                    <!--Fast Sunday-->
+                <!--</div>-->
+                <!--<ui-switch ng-model="week.fast_sunday">Fast Sunday</ui-switch>-->
+                <form>
+                    <div class="form-group">
+                        <label>Opening Hymn</label>
+                        <button class="btn btn-default" ui-toggle='chooseHymn'>Choose...</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Opening Prayer</label>
+                        <button class="btn btn-default" ui-toggle='chooseMember'>Choose...</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Sacrament Hymn</label>
+                        <button class="btn btn-default" ui-toggle='chooseHymn'>Choose...</button>
+                    </div>
+                    <div class="form-group">
+                        <label>First Speaker</label>
+                        <button class="btn btn-default" ui-toggle='chooseMember'>Choose...</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Second Speaker</label>
+                        <button class="btn btn-default" ui-toggle='chooseMember'>Choose...</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Rest Hymn</label>
+                        <button class="btn btn-default" ui-toggle='chooseHymn'>Choose...</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Final Speaker</label>
+                        <button class="btn btn-default" ui-toggle='chooseMember'>Choose...</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Closing Hymn</label>
+                        <button class="btn btn-default" ui-toggle='chooseHymn'>Choose...</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Closing Prayer</label>
+                        <button class="btn btn-default" ui-toggle='chooseMember'>Choose...</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div ui-content-for="modals">
+    <div class="modal modal-overlay" ui-if='chooseMember' ui-state='chooseMember'>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close"
+                            ui-turn-off="chooseMember">&times;</button>
+                    <h4 class="modal-title">Select a Member</h4>
+                </div>
+                <div class="modal-body scrollable-content">
+                    <div class="list-group">
+                        <a ng-repeat="member in members" href="#" class="list-group-item">{{ member.name }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal modal-overlay" ui-if='chooseHymn' ui-state='chooseHymn'>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close"
+                            ui-turn-off="chooseHymn">&times;</button>
+                    <h4 class="modal-title">Select a Hymn</h4>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        <li>The Morning Breaks</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
