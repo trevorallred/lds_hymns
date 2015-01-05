@@ -61,13 +61,13 @@ app.controller('SelectHymnCtrl', ['$scope', '$http', '$routeParams',
     function ($scope, $http, $routeParams) {
         $scope.songType = $routeParams.songType;
         var view = $routeParams.view;
-        $scope.activeTab = "list";
+        $scope.orderBy = "title";
 
         $scope.hymns = [
             {page: 1, title: "The Morning Breaks"},
             {page: 2, title: "The Spirit of God"},
-            {page: 3, title: "The Morning Breaks"},
-            {page: 4, title: "The Morning Breaks"}
+            {page: 3, title: "Redeemer of Israel"},
+            {page: 242, title: "Called to Serve"}
         ];
     }]);
 
