@@ -1,61 +1,110 @@
 @(loginUrl: String)
 
 <!DOCTYPE html>
-<html ng-app="myApp">
+<html lang="en">
+
     <head>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+
         <title>LDS Meeting Organizer</title>
-        <link rel="stylesheet" href='@routes.Assets.at("bower/mobile-angular-ui/dist/css/mobile-angular-ui-hover.min.css")'>
-        <link rel="stylesheet" href='@routes.Assets.at("bower/mobile-angular-ui/dist/css/mobile-angular-ui-base.min.css")'>
-        <link rel="stylesheet"
-        href='@routes.Assets.at("bower/mobile-angular-ui/dist/css/mobile-angular-ui-desktop.min.css")'>
-        <link rel="stylesheet" href='@routes.Assets.at("bower/font-awesome/css/font-awesome.min.css")'>
-        <script src='@routes.Assets.at("bower/angular/angular.min.js")'></script>
-        <script src='@routes.Assets.at("bower/angular-route/angular-route.min.js")'></script>
-        <script src='@routes.Assets.at("bower/mobile-angular-ui/dist/js/mobile-angular-ui.min.js")'></script>
-        <script src='@routes.Assets.at("javascripts/app.js")'></script>
-        <script src='@routes.Assets.at("javascripts/util.js")'></script>
+
+        <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" href='@routes.Assets.at("bower/bootstrap/dist/css/bootstrap.min.css")'>
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href='@routes.Assets.at("lib/clean-blog/clean-blog.min.css")'>
+
+        <!-- Custom Fonts -->
+        <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+            <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+            <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+            <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+            <![endif]-->
+
     </head>
+
     <body>
-        <!-- Sidebars -->
-        <div class="sidebar sidebar-left">
-            <div class="scrollable">
-                <h1 class="scrollable-header app-name">LDS Meeting Organizer</h1>
-                `
-                <div class="scrollable-content">
-                    <div class="list-group" ui-turn-off='uiSidebarLeft'>
-                        <a class="list-group-item" href="#/about">About <i class="fa fa-chevron-right pull-right"></i></a>
-                        <a class="list-group-item" href="@loginUrl">Login </a>
+
+            <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+            <div class="container-fluid">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header page-scroll">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">LDS Meeting Organizer</a>
+                    <a class="" href="@loginUrl">Login</a>
+                </div>
+            </div>
+                <!-- /.container -->
+        </nav>
+
+            <!-- Page Header -->
+            <!-- Set your background image for this header on the line below. -->
+        <header class="intro-header" style="background-image: url('@routes.Assets.at("images/tabernacle_large.jpg")')">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                        <div class="site-heading">
+                            <h1>LDS Meeting Organizer</h1>
+                            <hr class="small">
+                            <span class="subheading">A mobile-friendly tool for LDS leaders to create sacrament meeting agendas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+            <!-- Main Content -->
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="post-preview">
+                        <h2 class="post-title">
+                            Hymns
+                        </h2>
+                        <p class="post-meta">Choose hymns to sing</p>
+                    </div>
+                    <div class="post-preview">
+                        <h2 class="post-title">
+                            Speakers
+                        </h2>
+                        <p class="post-meta">Assign speakers, set topics</p>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="sidebar sidebar-right">
-            <div class="scrollable" ui-yield-to="rightNavBar">
-            </div>
-        </div>
 
-        <div class="app">
-            <div ui-yield-to="topNavBar" class="navbar navbar-app navbar-absolute-top">
-                    <!-- Top Navbar -->
-                <div class="navbar-brand">
-                    <span>LDS Meeting Organizer</span>
+        <footer>
+            <div class="container">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 text-center">
+                    <a href="@loginUrl" class="btn-default">
+                        Login
+                        <span class="fa-stack fa-lg">
+                            <i class="fa fa-twitter fa-stack-1x"></i>
+                        </span>
+                    </a>
                 </div>
             </div>
-            <div ui-yield-to="bottomNavBar" class="navbar navbar-app navbar-absolute-bottom">
-                    <!-- Bottom Navbar -->
-            </div>
+        </footer>
 
-                <!-- App body -->
-
-            <div class='app-body'>
-                <div class='app-content'>
-                    <ng-view></ng-view>
-                </div>
-            </div>
-        </div>
-
-            <!-- Modals and Overlays -->
-        <div ui-yield-to="modals"></div>
+        <script src='@routes.Assets.at("bower/jquery/dist/jquery.min.js")'></script>
+        <script src='@routes.Assets.at("bower/bootstrap/dist/js/bootstrap.min.js")'></script>
+        <script src='@routes.Assets.at("lib/clean-blog/clean-blog.min.js")'></script>
 
     </body>
+
 </html>
