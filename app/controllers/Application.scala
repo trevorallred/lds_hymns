@@ -4,33 +4,34 @@ import java.util.UUID
 
 import play.api._
 import play.api.mvc._
-import play.api.libs.concurrent.Execution.Implicits._
-
-import scala.concurrent.Future
+import services.LdsSession
 import util.OAuth2
 
 object Application extends Controller {
 
   def index = Action { implicit request =>
-    val oauth2 = new OAuth2(Play.current)
-    val callbackUrl = util.routes.OAuth2.callback(None, None).absoluteURL()
-    val scope = "todo" // TODO figure out scope for LDS Connect
-    val state = UUID.randomUUID().toString // random confirmation string
-    val redirectUrl = oauth2.getAuthorizationUrl(callbackUrl, "code", scope, state)
-    println(redirectUrl)
-    Ok(views.html.index("Your new application is ready.", redirectUrl)).
-      withSession("oauth-state" -> state)
-  }
-
-  def mobile = Action.async {
-    Future {
-      Ok(views.html.mobile())
+    val session = new LdsSession(request)
+    if (session.isLogged) {
+      Ok(views.html.index(session))
+    } else {
+      val callbackUrl = util.routes.OAuth2.callback(None, None).absoluteURL()
+      val state = UUID.randomUUID().toString
+      val oauth2 = new OAuth2(Play.current)
+      val redirectUrl = oauth2.getAuthorizationUrl(callbackUrl, "code", "", state)
+      Ok(views.html.login(redirectUrl)).
+        withSession("oauth-state" -> state)
     }
   }
 
-  def jsonHymns = Action {
-    //    val hymns = None;
-    Ok(views.html.hymns.list(???))
+  def logout = Action { implicit request =>
+    Redirect(controllers.routes.Application.index).withNewSession
   }
 
+  def stub = Action {
+    Ok("not implemented yet")
+  }
+
+  def stub2(variable: String) = Action {
+    Ok("not implemented yet")
+  }
 }

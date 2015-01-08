@@ -3,11 +3,18 @@
 # ~~~~
 
 # Home page
-GET        /                       controllers.Application.index
+GET         /                             controllers.Application.index
+GET         /logout                       controllers.Application.logout
+
+# Oauth
+GET         /_oauth-callback              util.OAuth2.callback(code: Option[String], state: Option[String])
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file           controllers.Assets.at(path="/public", file)
+GET         /assets/*file                 controllers.Assets.at(path="/public", file)
 
-# OAuth2 Stuff
-GET        /_oauth-callback        util.OAuth2.callback(code: Option[String], state: Option[String])
-GET        /_oauth-success         util.OAuth2.success
+# API
+GET         /api/v1/hymns/:page           controllers.Hymns.hymn(page: Int)
+GET         /api/v1/profile               controllers.Application.stub
+GET         /api/v1/members               controllers.Application.stub
+GET         /api/v1/meetings/:date        controllers.Application.stub2(date)
+POST        /api/v1/meetings/:date        controllers.Application.stub2(date)

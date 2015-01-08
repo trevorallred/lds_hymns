@@ -1,13 +1,13 @@
 package util
 
-import play.api.Application
-import play.api.Play
-import play.api.http.{MimeTypes, HeaderNames}
-import play.api.libs.ws.{WSAuthScheme, WS}
-import play.api.mvc.{Results, Action, Controller}
+import play.api.http.HeaderNames
+import play.api.libs.ws.{WS, WSAuthScheme}
+import play.api.mvc.{Action, Controller, RequestHeader}
+import play.api.{Application, Play}
+import services.Session
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class OAuth2(application: Application) {
   lazy val ldsAuthId = application.configuration.getString("lds.client.id").get
@@ -18,7 +18,7 @@ class OAuth2(application: Application) {
     authEndpoint.format(responseType, ldsAuthId, redirectUri, scope, state)
   }
 
-  def getToken(code: String): Future[String] = {
+  def getNewToken(code: String): Future[String] = {
     val tokenEndpoint = application.configuration.getString("lds.token.endpoint").get
     val tokenResponse = WS.url(tokenEndpoint)(application).
       withAuth(ldsAuthId, ldsAuthSecret, WSAuthScheme.BASIC).
@@ -45,15 +45,16 @@ class OAuth2(application: Application) {
 object OAuth2 extends Controller {
   lazy val oauth2 = new OAuth2(Play.current)
 
+
   def callback(codeOpt: Option[String] = None, stateOpt: Option[String] = None) = Action.async { implicit request =>
     (for {
       code <- codeOpt
       state <- stateOpt
-      oauthState <- request.session.get("oauth-state")
+      oauthState <- request.session.get(Session.OAUTH_STATE)
     } yield {
       if (state == oauthState) {
-        oauth2.getToken(code).map { accessToken =>
-          Redirect(util.routes.OAuth2.success()).withSession("oauth-token" -> accessToken)
+        oauth2.getNewToken(code).map { accessToken =>
+          Redirect(controllers.routes.Application.index).withSession(Session.OAUTH_TOKEN -> accessToken)
         }.recover {
           case ex: IllegalStateException => Unauthorized(ex.getMessage)
         }
@@ -65,9 +66,9 @@ object OAuth2 extends Controller {
       )
   }
 
-  def success() = Action.async { request =>
+  def profile() = Action.async { request =>
     implicit val app = Play.current
-    request.session.get("oauth-token").fold(Future.successful(Unauthorized("No way Jose"))) { authToken =>
+    Session.getToken(request).fold(Future.successful(Unauthorized("No way Jose"))) { authToken =>
       WS.url("https://ldsconnect.org/api/ldsorg/me").
         withHeaders(HeaderNames.AUTHORIZATION -> s"Bearer $authToken").
         get().map { response =>
