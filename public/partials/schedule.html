@@ -1,13 +1,21 @@
 <div ui-content-for="topNavBar">
-    <div class="btn-group pull-left">
-        <a href ui-toggle='uiSidebarLeft'>Open</a>
-    </div>
+    <!--<div class="btn-group pull-right">-->
+        <!--<a href ui-toggle='uiSidebarLeft' title="This is broken and I'm not sure why">Side bar??</a>-->
+    <!--</div>-->
 
-    <div class="navbar-brand navbar-brand-center">
-        <span>
-            <i class="fa fa-calendar"></i>
-            {{ week.date | date: "mediumDate"}}
-        </span>
+    <div class="btn-group">
+        <div class="navbar-brand">
+            <a class="navbar-text" href="#/schedule/{{ week.previousWeek() | date: 'yyyy-MM-dd' }}">
+                <i class="fa fa-angle-double-left"></i>
+            </a>
+            <span>
+                <i class="fa fa-calendar"></i>
+                {{ week.date | date: "mediumDate"}}
+            </span>
+            <a class="navbar-text" href="#/schedule/{{ week.nextWeek() | date: 'yyyy-MM-dd' }}">
+                <i class="fa fa-angle-double-right"></i>
+            </a>
+        </div>
     </div>
 </div>
 

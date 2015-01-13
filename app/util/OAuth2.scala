@@ -1,15 +1,15 @@
 package util
 
-import play.api.http.HeaderNames
 import play.api.libs.ws.{WS, WSAuthScheme}
-import play.api.mvc.{Action, Controller, RequestHeader}
+import play.api.mvc.{Action, Controller}
 import play.api.{Application, Play}
-import services.Session
+import services.LdsSession
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class OAuth2(application: Application) {
+  val NOT_LOGGED_IN = "Not Logged In"
   lazy val ldsAuthId = application.configuration.getString("lds.client.id").get
   lazy val ldsAuthSecret = application.configuration.getString("lds.client.secret").get
 
@@ -45,16 +45,15 @@ class OAuth2(application: Application) {
 object OAuth2 extends Controller {
   lazy val oauth2 = new OAuth2(Play.current)
 
-
   def callback(codeOpt: Option[String] = None, stateOpt: Option[String] = None) = Action.async { implicit request =>
     (for {
       code <- codeOpt
       state <- stateOpt
-      oauthState <- request.session.get(Session.OAUTH_STATE)
+      oauthState <- request.session.get(LdsSession.OAUTH_STATE)
     } yield {
       if (state == oauthState) {
         oauth2.getNewToken(code).map { accessToken =>
-          Redirect(controllers.routes.Application.index).withSession(Session.OAUTH_TOKEN -> accessToken)
+          Redirect(controllers.routes.Application.index).withSession(LdsSession.OAUTH_TOKEN -> accessToken)
         }.recover {
           case ex: IllegalStateException => Unauthorized(ex.getMessage)
         }
@@ -66,14 +65,4 @@ object OAuth2 extends Controller {
       )
   }
 
-  def profile() = Action.async { request =>
-    implicit val app = Play.current
-    Session.getToken(request).fold(Future.successful(Unauthorized("No way Jose"))) { authToken =>
-      WS.url("https://ldsconnect.org/api/ldsorg/me").
-        withHeaders(HeaderNames.AUTHORIZATION -> s"Bearer $authToken").
-        get().map { response =>
-        Ok(response.json)
-      }
-    }
-  }
 }

@@ -10,9 +10,8 @@ import util.OAuth2
 object Application extends Controller {
 
   def index = Action { implicit request =>
-    val session = new LdsSession(request)
-    if (session.isLogged) {
-      Ok(views.html.index(session))
+    if (LdsSession.isLoggedIn(request)) {
+      Ok(views.html.index())
     } else {
       val callbackUrl = util.routes.OAuth2.callback(None, None).absoluteURL()
       val state = UUID.randomUUID().toString

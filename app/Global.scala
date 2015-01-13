@@ -3,7 +3,7 @@ package app
 import dal.SlickDAL
 import play.api.{Application, GlobalSettings}
 
-import scala.slick.driver.H2Driver
+import scala.slick.driver.MySQLDriver
 
 object Global extends GlobalSettings {
   // No choice but to use vars here.
@@ -34,7 +34,7 @@ object Global extends GlobalSettings {
 
     val (dal: SlickDAL, db: Database) = driver.get match {
       case "org.h2.Driver" => {
-        (new SlickDAL(H2Driver),
+        (new SlickDAL(MySQLDriver),
          Database.forURL(url.get,
                          driver   = driver.get,
                          user     = user.get,

@@ -41,8 +41,8 @@
                                 ui-turn-off="myDropdown">
 
                             <li><a href="" data-ng-click="orderBy = 'suggested'">Suggested</a></li>
-                            <li><a href="" data-ng-click="orderBy = 'page'">Page</a></li>
-                            <li><a href="" data-ng-click="orderBy = 'title'">Title</a></li>
+                            <li><a href="" data-ng-click="orderBy = 'number'">Number</a></li>
+                            <li><a href="" data-ng-click="orderBy = 'name'">Title</a></li>
                             <li><a href="" data-ng-click="orderBy = 'popularity'">Popularity</a></li>
                         </ul>
                     </div>
@@ -52,7 +52,7 @@
                 <div class="list-group">
                     <div class="list-group-item" data-ng-repeat="hymn in hymns | filter: search | orderBy: orderBy">
                         <button class="btn btn-default" data-ng-click="choose(hymn)">Choose</button>
-                        {{ hymn.page }} {{ hymn.title }}
+                        {{ hymn.number }} - {{ hymn.name }}
                         <a class="btn btn-default pull-right" href="#/schedule/{{ week.label }}/song/{{ songType }}/{{ hymn.page }}">
                             Details
                             <i class="fa fa-chevron-right"></i>

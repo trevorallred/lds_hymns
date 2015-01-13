@@ -61,14 +61,19 @@ app.controller('SelectHymnCtrl', ['$scope', '$http', '$routeParams',
     function ($scope, $http, $routeParams) {
         $scope.songType = $routeParams.songType;
         var view = $routeParams.view;
-        $scope.orderBy = "title";
+        $scope.orderBy = "number";
 
-        $scope.hymns = [
-            {page: 1, title: "The Morning Breaks"},
-            {page: 2, title: "The Spirit of God"},
-            {page: 3, title: "Redeemer of Israel"},
-            {page: 242, title: "Called to Serve"}
-        ];
+        $http.get('/assets/hymns.json').
+            success(function(data, status, headers, config) {
+                $scope.hymns = data;
+            }).
+            error(function(data, status, headers, config) {
+                $scope.hymns = [
+                    {"number": 0, "name": "ERROR: Failed to load hymns"}
+                ];
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
     }]);
 
 app.controller('SelectMemberCtrl', ['$scope', '$http', '$routeParams',
