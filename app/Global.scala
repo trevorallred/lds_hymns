@@ -3,14 +3,14 @@ package app
 import dal.SlickDAL
 import play.api.{Application, GlobalSettings}
 
-import scala.slick.driver.MySQLDriver
+import scala.slick.driver.{H2Driver, MySQLDriver}
 
 object Global extends GlobalSettings {
   // No choice but to use vars here.
   private var _dal: Option[SlickDAL] = None
   private var _db: Option[scala.slick.jdbc.JdbcBackend#Database] = None
 
-  def dal = _dal.get // Okay to barf if not there
+  def dal = _dal.get
   def database = _db.get
 
   override def onStart(app: Application): Unit = {
@@ -28,12 +28,20 @@ object Global extends GlobalSettings {
     val user     = cfg.getString("db.default.user")
     val password = cfg.getString("db.default.password")
 
-    if (Seq(driver, url, user, password).flatten.length == 0) {
+    if (Seq(driver, url, user, password).flatten.length < 4) {
       sys.error("Missing required database parameters in configuration.")
     }
 
     val (dal: SlickDAL, db: Database) = driver.get match {
       case "org.h2.Driver" => {
+        (new SlickDAL(H2Driver),
+         Database.forURL(url.get,
+                         driver   = driver.get,
+                         user     = user.get,
+                         password = password.get))
+      }
+
+      case "com.mysql.jdbc.Driver" => {
         (new SlickDAL(MySQLDriver),
          Database.forURL(url.get,
                          driver   = driver.get,

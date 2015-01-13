@@ -10,8 +10,7 @@ GET         /logout                       controllers.Application.logout
 GET         /_oauth-callback              util.OAuth2.callback(code: Option[String], state: Option[String])
 GET         /ldsconnect/profile           util.LdsConnect.profile
 GET         /ldsconnect/ward              util.LdsConnect.ward
-
-
+GET         /experiment                   controllers.Experiment.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                 controllers.Assets.at(path="/public", file)
