@@ -1,7 +1,9 @@
 package models
 
 case class Stake(unitNo: Int,
-                 name: String)
+                 name: String,
+                 areaUnitNo: Option[Int])
 
 case class Ward(unitNo: Int,
-                name: String)
+                name: String,
+                stakeUnitNo: Option[Int])

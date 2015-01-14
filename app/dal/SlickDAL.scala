@@ -9,6 +9,7 @@ trait SlickProfile {
 class SlickDAL(override val profile: JdbcProfile)
   extends SlickProfile
   with StakeComponent
+  with WardComponent
 
 trait StakeComponent {
   self: SlickProfile =>
@@ -27,9 +28,29 @@ trait StakeComponent {
 
     def name = column[String]("name")
 
-    def * = (unitNo, name) <>
-      (Stake.tupled, Stake.unapply _)
+    def areaUnitNo = column[Int]("areaUnitNo")
+
+    def * = (unitNo, name, areaUnitNo.?) <>(Stake.tupled, Stake.unapply _)
   }
 
   val Stakes = TableQuery[StakeTable]
+}
+
+trait WardComponent {
+  self: SlickProfile =>
+
+  import profile.simple._
+  import models.Ward
+
+  class WardTable(tag: Tag) extends Table[Ward](tag, "ward") {
+    def unitNo = column[Int]("unitNo", O.PrimaryKey)
+
+    def name = column[String]("name")
+
+    def stakeUnitNo = column[Int]("stakeUnitNo")
+
+    def * = (unitNo, name, stakeUnitNo.?) <>(Ward.tupled, Ward.unapply _)
+  }
+
+  val Wards = TableQuery[WardTable]
 }

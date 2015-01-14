@@ -1,5 +1,7 @@
 package util
 
+import dal.DAO
+import models.{Ward, Stake}
 import play.api.Play
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsNumber, JsValue}
@@ -11,8 +13,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
-class LdsProfile(memberID: Integer, name: String, surname: String, gender: String, email: String, phone: String) {
-  override def toString: String = memberID + name
+case class LdsProfile(
+                       memberID: Integer,
+                       name: String,
+                       surname: String,
+                       gender: String,
+                       email: String,
+                       phone: Option[String],
+                       ward: Option[Ward],
+                       stake: Option[Stake]) {
+  override def toString: String = s":$name $surname ($memberID) in $ward in $stake"
 }
 
 object LdsConnect {
@@ -21,9 +31,13 @@ object LdsConnect {
     LdsSession.getToken(request).fold(Future.successful(Unauthorized(oauth2.NOT_LOGGED_IN))) { authToken =>
       WS.url("https://ldsconnect.org/api/ldsorg/me").
         withHeaders(HeaderNames.AUTHORIZATION -> s"Bearer $authToken").
-        get().map { response =>
+        get.map { response =>
         val currentUser = convertProfileFromJson(response.json)
+        //        DAO.stakeDAO.save(new Stake(unitNo = scala.util.Random.nextInt(100000), name = "123"))
         println(currentUser)
+        if (currentUser.stake.isDefined) {
+          DAO.stakeDAO.save(currentUser.stake.get)
+        }
         Ok(response.json)
       }
     }
@@ -32,12 +46,26 @@ object LdsConnect {
   def convertProfileFromJson(json: JsValue): LdsProfile = {
     new LdsProfile(
       memberID = (json \ "currentUserId").as[Int],
-      name = (json \ "currentUserId").as[String],
+      name = "",
+      //      name = (json \ "currentUserId").as[String],
       surname = "",
       gender = "",
       email = "",
-      phone = ""
+      phone = None,
+      ward = None,
+      stake = convertStakeFromCurrentUnitsJson(json \ "currentUnits")
     )
+  }
+
+  private def convertStakeFromCurrentUnitsJson(currentUnits: JsValue): Option[Stake] = {
+    val hasStake = (currentUnits \ "stake").as[Boolean]
+    if (hasStake) {
+      Some(new Stake((currentUnits \ "stakeUnitNo").as[Int],
+        (currentUnits \ "stakeName").as[String],
+        Some((currentUnits \ "areaUnitNo").as[Int])))
+    } else {
+      None
+    }
   }
 
   def ward = Action.async { request =>

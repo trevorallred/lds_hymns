@@ -28,7 +28,9 @@ class StakeDAO(_dal: SlickDAL) extends BaseDAO(_dal) {
 
   def findByID(unitNo: Int): Future[Option[Stake]] = {
     withSession { implicit session =>
-      val q = for {p <- Stakes if p.unitNo === unitNo} yield p
+      val q = for {
+        p <- Stakes if p.unitNo === unitNo
+      } yield p
       Future(q.list.headOption)
     }
   }
@@ -41,11 +43,18 @@ class StakeDAO(_dal: SlickDAL) extends BaseDAO(_dal) {
     }
   }
 
-  def save(p: Stake): Future[Stake] = {
+  def save(row: Stake): Future[Stake] = {
     withTransaction { implicit session =>
-      findByID(p.unitNo).map { opt =>
-        opt.map { existing => update(p)}
-          .getOrElse(insert(p))
+      val result = for {
+        p <- Stakes if p.unitNo === row.unitNo
+      } yield p
+
+      Future {
+        result.list.headOption.map(x =>
+          update(row)
+        ).getOrElse(
+            insert(row)
+          )
       }
     }
   }
@@ -57,8 +66,8 @@ class StakeDAO(_dal: SlickDAL) extends BaseDAO(_dal) {
 
   private def update(row: Stake)(implicit session: SlickSession) = {
     val q = for {existing <- Stakes if existing.unitNo === row.unitNo}
-    yield (existing.name)
-    q.update((row.name))
+    yield (existing.name, existing.areaUnitNo)
+    q.update((row.name, row.areaUnitNo.get))
     row
   }
 }
