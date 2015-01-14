@@ -1,16 +1,16 @@
 package util
 
 import dal.DAO
-import models.{Ward, Stake}
+import models.{Stake, Ward}
 import play.api.Play
 import play.api.http.HeaderNames
-import play.api.libs.json.{JsNumber, JsValue}
+import play.api.libs.json.JsValue
 import play.api.libs.ws.WS
 import play.api.mvc.Action
 import services.LdsSession
 import util.OAuth2._
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 case class LdsProfile(
@@ -32,39 +32,17 @@ object LdsConnect {
       WS.url("https://ldsconnect.org/api/ldsorg/me").
         withHeaders(HeaderNames.AUTHORIZATION -> s"Bearer $authToken").
         get.map { response =>
-        val currentUser = convertProfileFromJson(response.json)
-        //        DAO.stakeDAO.save(new Stake(unitNo = scala.util.Random.nextInt(100000), name = "123"))
+        val currentUser = LdsConnectJson.convertProfileFromJson(response.json)
         println(currentUser)
-        if (currentUser.stake.isDefined) {
-          DAO.stakeDAO.save(currentUser.stake.get)
-        }
+        currentUser.stake.map(stake =>
+          DAO.stakeDAO.save(stake)
+        )
+        currentUser.ward.map(ward =>
+          //          DAO.wardDAO.save(ward)
+          println(ward)
+        )
         Ok(response.json)
       }
-    }
-  }
-
-  def convertProfileFromJson(json: JsValue): LdsProfile = {
-    new LdsProfile(
-      memberID = (json \ "currentUserId").as[Int],
-      name = "",
-      //      name = (json \ "currentUserId").as[String],
-      surname = "",
-      gender = "",
-      email = "",
-      phone = None,
-      ward = None,
-      stake = convertStakeFromCurrentUnitsJson(json \ "currentUnits")
-    )
-  }
-
-  private def convertStakeFromCurrentUnitsJson(currentUnits: JsValue): Option[Stake] = {
-    val hasStake = (currentUnits \ "stake").as[Boolean]
-    if (hasStake) {
-      Some(new Stake((currentUnits \ "stakeUnitNo").as[Int],
-        (currentUnits \ "stakeName").as[String],
-        Some((currentUnits \ "areaUnitNo").as[Int])))
-    } else {
-      None
     }
   }
 
@@ -84,4 +62,53 @@ object LdsConnect {
     }
   }
 
+}
+
+object LdsConnectJson {
+  private val CURRENT_UNITS = "currentUnits"
+  private val AREA_UNIT_NO = "areaUnitNo"
+  private val STAKE = "stake"
+  private val STAKE_NAME = "stakeName"
+  private val STAKE_UNIT_NO = "stakeUnitNo"
+  private val WARD = "ward"
+  private val WARD_NAME = "wardName"
+  private val WARD_UNIT_NO = "wardUnitNo"
+
+  def convertProfileFromJson(json: JsValue): LdsProfile = {
+    new LdsProfile(
+      memberID = (json \ "currentUserId").as[Int],
+      name = "",
+      //      name = (json \ "currentUserId").as[String],
+      surname = "",
+      gender = "",
+      email = "",
+      phone = None,
+      ward = convertWardFromCurrentUnitsJson(json \ CURRENT_UNITS),
+      stake = convertStakeFromCurrentUnitsJson(json \ CURRENT_UNITS)
+    )
+  }
+
+  private def convertStakeFromCurrentUnitsJson(currentUnits: JsValue): Option[Stake] = {
+    if ((currentUnits \ STAKE).as[Boolean]) {
+      Some(new Stake(
+        (currentUnits \ STAKE_UNIT_NO).as[Int],
+        (currentUnits \ STAKE_NAME).as[String],
+        Some((currentUnits \ AREA_UNIT_NO).as[Int])
+      ))
+    } else {
+      None
+    }
+  }
+
+  private def convertWardFromCurrentUnitsJson(currentUnits: JsValue): Option[Ward] = {
+    if ((currentUnits \ WARD).as[Boolean]) {
+      Some(new Ward(
+        (currentUnits \ WARD_UNIT_NO).as[Int],
+        (currentUnits \ WARD_NAME).as[String],
+        Some((currentUnits \ STAKE_UNIT_NO).as[Int])
+      ))
+    } else {
+      None
+    }
+  }
 }
