@@ -10,6 +10,7 @@ class SlickDAL(override val profile: JdbcProfile)
   extends SlickProfile
   with StakeComponent
   with WardComponent
+  with MemberComponent
 
 trait StakeComponent {
   self: SlickProfile =>
@@ -53,4 +54,25 @@ trait WardComponent {
   }
 
   val Wards = TableQuery[WardTable]
+}
+
+trait MemberComponent {
+  self: SlickProfile =>
+
+  import profile.simple._
+  import models.Member
+
+  class MemberTable(tag: Tag) extends Table[Member](tag, "member") {
+    def memberID = column[Long]("memberID", O.PrimaryKey)
+
+    def name = column[String]("name")
+
+    def surname = column[String]("surname")
+
+    def wardUnitNo = column[Int]("wardUnitNo")
+
+    def * = (memberID, name, surname, wardUnitNo) <>(Member.tupled, Member.unapply _)
+  }
+
+  val Members = TableQuery[MemberTable]
 }
